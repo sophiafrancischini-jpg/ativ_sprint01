@@ -1,67 +1,96 @@
-import express from "express";
-const app = express();
+import express from 'express'
+
+const app = express()
 const PORT = 3000
 
-//sprint 1 -----------
+// Rota 1: Página inicial
+app.get('/', (req, res) => {
+  res.send('Bem-vindo à Central de Informações da Escola!')
+})
 
-function Listarmensagem() { return mensagens; }
+// Rota 2: Status do servidor
+app.get('/status', (req, res) => {
+  res.json({
+    status: 'online',
+    mensagem: 'O servidor está funcionando corretamente.'
+  })
+})
 
-app.get("/", (req, res) => {
-    res.send ("Servidor rodando! 🚀")
-});
+// Rota 3: Informações da escola
+app.get('/escola', (req, res) => {
+  res.json({
+    nome: 'Escola Técnica Horizonte',
+    cidade: 'São Paulo',
+    tipo: 'Ensino Técnico'
+  })
+})
 
-app.get("/status", (req, res) => {
-    res.json({status_servidor: "online", sprint: 2});
-});
-
-app.get ("/sobre", (req,res) => {
-    res.send ("Projeto Mensageiro Local");
-});
-
-app.get('/informacao', (req, res) => {
-    res.json({ nome: 'SENAI', cidade: 'Valinhos', tipo: 'Privada' });
-});
-
-const cursos = [
-    { id: '1', nome: 'DS' },
-    { id: '2', nome: 'Elétrica' },
-    { id: '3', nome: 'Mecânica' },
-];
-
+// Rota 4: Lista de cursos
 app.get('/cursos', (req, res) => {
-    res.json(cursos);
-});
+  const cursos = [
+    { id: 1, nome: 'Desenvolvimento de Sistemas' },
+    { id: 2, nome: 'Redes de Computadores' },
+    { id: 3, nome: 'Administração' }
+  ]
 
+  res.json(cursos)
+})
+
+// Rota 5: Informações do professor
 app.get('/professor', (req, res) => {
-    res.json({ nome: 'Eduardo', disciplina: 'DS', email: 'Eduardo@senai.br' });
-});
+  res.json({
+    nome: 'Carlos Oliveira',
+    disciplina: 'Programação Back-End'
+  })
+})
 
-const orientacoes = [
-    {
-        status: 'Status do servidor',
-        informacao: 'informações importantes',
-        cursos: 'Vizualizar os cursos disponiveis',
-        professor: 'Informações sobre o professor',
-    },
-];
-
+// Rota 6: Orientações de ajuda
 app.get('/ajuda', (req, res) => {
-    res.json(orientacoes);
-});
+  res.send(
+    'Rotas disponíveis:\n' +
+    '/ - Página inicial e boas-vindas.\n' +
+    '/status - Verifica se o servidor está online.\n' +
+    '/escola - Exibe informações da instituição.\n' +
+    '/cursos - Lista os cursos disponíveis.\n' +
+    '/professor - Exibe informações do professor.\n' +
+    '/ajuda - Apresenta esta lista de orientações.\n' +
+    '/requisicao - Exibe dados da requisição recebida.'
+  )
+})
 
-app.get("/mensagens", (req, res) => {
-    res.json(Listarmensagem());
-});
+// Desafio extra: Investigando o req
+app.get('/requisicao', (req, res) => {
+  res.json({
+    metodo: req.method,
+    caminho: req.path,
+    mensagem: 'Requisição recebida com sucesso.'
+  })
+})
 
-// sprint 2 --------
+// Inicialização do servidor
+app.listen(PORT, () => {
+  console.log(`Servidor rodando em http://localhost:${PORT}`)
+})
+
+
+//Sprint-02
 
 const mensagens = [
-    { id: 1, usuario: 'Ana', texto: 'Bom dia!' },
-    { id: 2, usuario: 'Pedro', texto: 'Olá!' },
-    { id: 3, usuario: 'Maria', texto: 'Tudo bem?' },
-    { id: 4, usuario: 'Lucas', texto: 'Como vai?' },
-    { id: 5, usuario: 'Carla', texto: 'Até logo!' },
-];
+  { id: 1, usuario: 'Ana', texto: 'Bem-vindo à Central de Informações da Escola!' },
+  { id: 2, usuario: 'Pedro', texto: 'Quando começam as aulas de Desenvolvimento de Sistemas?' },
+  { id: 3, usuario: 'Maria', texto: 'Onde encontro a lista de cursos disponíveis?' },
+  { id: 4, usuario: 'Lucas', texto: 'Qual o horário de atendimento do professor Carlos?' },
+  { id: 5, usuario: 'Carla', texto: 'Muito obrigada pelas orientações!' }
+]
+function listarMensagens() { return mensagens; }
+
+app.get("/", (req, res) => res.send("Servidor rodando! 🚀"));
+
+app.get("/status", (req, res) => res.json({ status: "online", sprint: 2 }));
+
+app.get("/sobre", (req, res) => res.send("Projeto Mensageiro Local"));
+
+app.get("/mensagens", (req, res) => res.json(listarMensagens()));
 
 app.get("/mensagens/:id", (req, res) => {
   const mensagem = mensagens.find(m => m.id === Number(req.params.id));
@@ -71,42 +100,26 @@ app.get("/mensagens/:id", (req, res) => {
 
 app.get("/total-mensagens", (req, res) => res.json({ total: mensagens.length }));
 
-// sprint 3 ---------
-
-function consultar (falhar = false) {
-    return new promisse((resolve, reject) => {
-        setTimeout(() => {
-            falhar
-                ? reject(new Error("Falhou"))
-                : resolve(mensagens);
-        }, 1000);
-    });
-};
-
-app.get("/mensagens-then", (req, res) => {
-    consultar()
-        .then(lista => res.json(lista))
-        .catch(() => res.status(500).json({ erro: "Falha na consulta" }));
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`Servidor em http://localhost:${PORT}`);
 });
+//Sprint 03
 
-app.get("/mensagens-async", async (req, res) => {
-    try {
-        res.json(await consultar());
-    } catch (erro) {
-        res.status(500).json({
-            erro: "Falha na consulta"
-        });
-    }
-});
+import express from "express";
 
-app.get('/mensagens-erro', async (req, res) => {
-    try {
-        res.json(await consultar(true));
-    } catch (erro) {
-        res.status(500).json({
-            erro: "Falha simulada",
-        });
-    }
-});
+const app = express();
 
-app.listen(PORT, "0.0.0.0", () => console.log (`Servidor em http://localhost:${PORT}`));
+const PORT = 3000;
+
+const mensagens = [{ id: 1, usuario: "Sophia", texto: "Bom dia!" }, { id: 2, usuario: "Isabela", texto: "Olá!" }];
+
+function consultar(simularErro = false) { return new Promise((resolve, reject) => { setTimeout(() => { if (simularErro) return reject(new Error("Falha simulada"));
+resolve(mensagens); }, 1000); }); }
+
+app.get("/mensagens-then", (req, res) => { consultar().then(lista => res.json(lista)).catch(() => res.status(500).json({ erro: "Falha na consulta" })); });
+
+app.get("/mensagens-async", async (req, res) => { try { res.json(await consultar()); } catch (erro) { res.status(500).json({ erro: "Falha na consulta" }); } });
+
+app.get("/mensagens-erro", async (req, res) => { try { res.json(await consultar(true)); } catch (erro) { res.status(500).json({ erro: "Falha simulada" }); } });
+
+app.listen(PORT, "0.0.0.0", () => { console.log(`Servidor em http://localhost:${PORT}`); });
